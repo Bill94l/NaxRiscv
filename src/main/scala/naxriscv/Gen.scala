@@ -41,6 +41,7 @@ object Config{
   def plugins(resetVector : BigInt = 0x80000000l,
               withRdTime : Boolean = true,
               ioRange    : UInt => Bool = _(31 downto 28) === 0x1,
+              memRange   : UInt => Bool = _(31),
               fetchRange : UInt => Bool = _(31 downto 28) =/= 0x1,
               aluCount : Int = 2,
               decodeCount : Int = 2,
@@ -87,6 +88,7 @@ object Config{
       case true => new MmuPlugin(
         spec    = if(xlen == 32) MmuSpec.sv32 else MmuSpec.sv39,
         ioRange = ioRange,
+        memRange = memRange,
         fetchRange = fetchRange,
         physicalWidth = 32
       )

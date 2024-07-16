@@ -1298,10 +1298,17 @@ class Lsu2Plugin(var lqSize: Int,
               redoTrigger := translationWake
             }
             is(CTRL_ENUM.TRAP_MMU){
-              setup.sharedTrap.valid := True
-              setup.sharedTrap.reason := ScheduleReason.TRAP
-              setup.sharedTrap.cause := CSR.MCAUSE_ENUM.LOAD_PAGE_FAULT
-              setup.sharedTrap.cause(1) := !IS_LOAD
+              when(PAGE_FAULT) {
+                setup.sharedTrap.valid := True
+                setup.sharedTrap.reason := ScheduleReason.TRAP
+                setup.sharedTrap.cause := CSR.MCAUSE_ENUM.LOAD_PAGE_FAULT
+                setup.sharedTrap.cause(1) := !IS_LOAD
+              }otherwise{
+                setup.sharedTrap.valid := True
+                setup.sharedTrap.reason := ScheduleReason.TRAP
+                setup.sharedTrap.cause := CSR.MCAUSE_ENUM.LOAD_ACCESS_FAULT
+                setup.sharedTrap.cause(1) := !IS_LOAD
+              }
             }
             is(CTRL_ENUM.LOAD_HAZARD){
               val waitFeed = LOAD_HAZARD_PRED_HIT || OLDER_STORE_WAIT_FEED
